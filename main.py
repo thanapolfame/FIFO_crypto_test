@@ -16,7 +16,7 @@ def buy_coin(wallet: list[dict], transaction: dict):
     )
 
 
-def sell_coin(wallet: list[dict], transaction: dict, profit: float):
+def sell_coin(wallet: list[dict], transaction: dict):
     """
     for each coin in wallet
         calculate profit
@@ -26,6 +26,7 @@ def sell_coin(wallet: list[dict], transaction: dict, profit: float):
     :param profit:
     :return:
     """
+    profit = 0.0
     coin_name = transaction['name']
     amount_to_sell = transaction['amount']
     for coin in wallet:
@@ -46,6 +47,7 @@ def sell_coin(wallet: list[dict], transaction: dict, profit: float):
 
         profit += sale - cost
         print(f'profit: {sale - cost}')
+        print(f'current profit: {profit}')
 
         amount_to_sell -= amount_selling
         coin['amount'] -= amount_selling
@@ -56,6 +58,9 @@ def sell_coin(wallet: list[dict], transaction: dict, profit: float):
     if amount_to_sell > 0:
         raise Exception('insufficient_coin')
 
+    return profit
+
+
 
 def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
     """
@@ -65,7 +70,7 @@ def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
     :param list_transaction:
     :return: profit
     """
-    profit: float = 0
+    profit = 0.0
     wallet = []
     '''
     wallet = [
@@ -77,13 +82,13 @@ def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
             ]
     '''
     for transaction in list_transaction:
-        print(f'transaction: {transaction}')
-        print(f"present_wallet: {wallet}")
+        # print(f'transaction: {transaction}')
+        # print(f"present_wallet: {wallet}")
         type_transaction = transaction['type']
         if type_transaction == 'B':
             buy_coin(wallet, transaction)
-        elif type_transaction == 's':
-            sell_coin(wallet, transaction, profit)
+        elif type_transaction == 'S':
+            profit += sell_coin(wallet, transaction)
 
     return profit
 
