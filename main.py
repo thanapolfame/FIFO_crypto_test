@@ -1,16 +1,71 @@
+def buy_coin(wallet: list[dict], transaction: dict):
+    """
+    append coin to wallet
+    :param wallet:
+    :param transaction:
+    :return:
+    """
+    coin_name = transaction['name']
+    print(f'Buying {coin_name}')
+    wallet.append(
+        {
+            'name': coin_name,
+            'amount': transaction['amount'],
+            'price': transaction['price']
+        }
+    )
+
+
+def sell_coin(wallet: list[dict], transaction: dict, profit: float):
+    """
+    for each coin in wallet
+        calculate profit
+    ถ้าเหรียญที่เคยซื้อมาไม่พอขายให้แสดงข้อความ error และหยุดการทำงาน
+    :param wallet:
+    :param transaction:
+    :param profit:
+    :return:
+    """
+    coin_name = transaction['name']
+    amount_to_sell = transaction['amount']
+    for coin in wallet:
+        if amount_to_sell == 0:
+            break
+        if coin['amount'] == 0:
+            continue
+        if coin['name'] != transaction['name']:
+            continue
+        print(f'Selling {coin_name}')
+
+        print(f'to sell: {amount_to_sell}')
+        amount_selling = min(amount_to_sell, coin['amount'])
+        print(f"selling {amount_selling}")
+
+        cost = amount_selling * coin['price']
+        sale = amount_selling * transaction['price']
+
+        profit += sale - cost
+        print(f'profit: {sale - cost}')
+
+        amount_to_sell -= amount_selling
+        coin['amount'] -= amount_selling
+        print(f'left to sell  {amount_to_sell}')
+
+    # after loop in wallet
+    # if coin sell transaction left, meaning coin in wallet is insufficient
+    if amount_to_sell > 0:
+        raise Exception('insufficient_coin')
+
+
 def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
     """
     for each transaction
-        if type == B
-            append to wallet
-        elif type == S
-            for each coin in wallet
-                calculate profit
-    ถ้าเหรียญที่เคยซื้อมาไม่พอขายให้แสดงข้อความ error และหยุดการทำงาน
+    check type: buy or sell
+
     :param list_transaction:
     :return: profit
     """
-    profit = 0
+    profit: float = 0
     wallet = []
     '''
     wallet = [
@@ -24,46 +79,11 @@ def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
     for transaction in list_transaction:
         print(f'transaction: {transaction}')
         print(f"present_wallet: {wallet}")
-        coin_name = transaction['name']
         type_transaction = transaction['type']
         if type_transaction == 'B':
-            print(f'Buying {coin_name}')
-            wallet.append(
-                {
-                    'name': coin_name,
-                    'amount': transaction['amount'],
-                    'price': transaction['price']
-                }
-            )
-        elif type_transaction == 'S':
-            amount_to_sell = transaction['amount']
-            for coin in wallet:
-                if amount_to_sell == 0:
-                    break
-                if coin['amount'] == 0:
-                    continue
-                if coin['name'] != transaction['name']:
-                    continue
-                print(f'Selling {coin_name}')
-
-                print(f'to sell: {amount_to_sell}')
-                amount_selling = min(amount_to_sell, coin['amount'])
-                print(f"selling {amount_selling}")
-
-                cost = amount_selling * coin['price']
-                sale = amount_selling * transaction['price']
-
-                profit += sale - cost
-                print(f'profit: {sale - cost}')
-
-                amount_to_sell -= amount_selling
-                coin['amount'] -= amount_selling
-                print(f'left to sell  {amount_to_sell}')
-
-            # after loop in wallet
-            # if coin sell transaction left, meaning coin in wallet is insufficient
-            if amount_to_sell > 0:
-                raise Exception('insufficient_coin')
+            buy_coin(wallet, transaction)
+        elif type_transaction == 's':
+            sell_coin(wallet, transaction, profit)
 
     return profit
 
@@ -88,7 +108,7 @@ def read_txt_file(file_name):
     list_transaction = []
     with open(file_name) as f:
         for line in f:
-            line = line.split(' ')
+            line = line.split(' ')  # split by space
             type_transaction = line[0]
             name = line[1]
             unit_price = float(line[2])
