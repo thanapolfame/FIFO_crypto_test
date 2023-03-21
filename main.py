@@ -16,15 +16,14 @@ def buy_coin(wallet: list[dict], transaction: dict):
     )
 
 
-def sell_coin(wallet: list[dict], transaction: dict):
+def sell_coin(wallet: list[dict], transaction: dict) -> float:
     """
     for each coin in wallet
         calculate profit
     ถ้าเหรียญที่เคยซื้อมาไม่พอขายให้แสดงข้อความ error และหยุดการทำงาน
     :param wallet:
     :param transaction:
-    :param profit:
-    :return:
+    :return: profit
     """
     profit = 0.0
     coin_name = transaction['name']
@@ -59,7 +58,6 @@ def sell_coin(wallet: list[dict], transaction: dict):
         raise Exception('insufficient_coin')
 
     return profit
-
 
 
 def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
