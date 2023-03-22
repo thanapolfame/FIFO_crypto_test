@@ -80,7 +80,7 @@ def calculate_transaction_fifo(list_transaction: list[dict]) -> float:
             ]
     '''
     for transaction in list_transaction:
-        # print(f'transaction: {transaction}')
+        # print(f"transaction: {transaction}")
         # print(f"present_wallet: {wallet}")
         type_transaction = transaction['type']
         if type_transaction == 'B':
